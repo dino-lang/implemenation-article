@@ -1,5 +1,9 @@
 2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
 
+	* dino.{dvi, ps, pdf}: New built file.
+
+2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
+
 	* dino.tex: New file.
 	* Makefile: Ditto.
 	* sigplanconf.cls: Ditto.
