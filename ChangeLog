@@ -1,5 +1,9 @@
 2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
 
+	* README.md: Make Layout.  Add how to read it from github.
+
+2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
+
 	* dino.{dvi, ps, pdf}: New built file.
 
 2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
