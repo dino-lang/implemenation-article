@@ -1,0 +1,8 @@
+2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
+
+	* dino.tex: New file.
+	* Makefile: Ditto.
+	* sigplanconf.cls: Ditto.
+	* Dino_Flow.{png, eps, pdf}: Ditto.
+	* ChangeLog: Ditto.
+	* README.md: Add about the draft.
