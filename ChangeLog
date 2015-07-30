@@ -1,5 +1,10 @@
 2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
 
+	* Makefile (dino.dvi): Call latex enough to generate citations.
+	* dino.{dvi, ps, pdf}: Update.
+
+2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
+
 	* README.md: Make Layout.  Add how to read it from github.
 
 2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>

@@ -1,6 +1,6 @@
 all: dino.pdf
 dino.dvi: dino.tex Dino_Flow.eps sigplanconf.cls
-	latex dino.tex
+	latex dino.tex;bibtex dino;latex dino.tex
 dino.ps: dino.dvi
 	dvips dino.dvi
 dino.pdf: dino.ps
