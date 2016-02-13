@@ -1,3 +1,11 @@
+2016-02-12  Vladimir Makarov  <vmakarov@gcc.gnu.org>
+
+	* dino.tex: Unicode character.  Switch-stmt to pmatch-statement.
+	Direct byte code dispatch earlier and direct threaded one now.
+	About light-weight JIT.  Remove regex Unicode from plans, add
+	light-weight JIT, type annotation.
+	* dino.{dvi, ps, pdf}: Update.
+
 2015-07-30  Vladimir Makarov  <vmakarov@gcc.gnu.org>
 
 	* Makefile (dino.dvi): Call latex enough to generate citations.

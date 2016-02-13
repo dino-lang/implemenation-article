@@ -227,7 +227,8 @@ Dino can therefore be thought of as a \emph{curly-bracket language}.
 %of programming languages.
 
 Variables in Dino can hold values of any type, so Dino
-is a \emph{dynamically typed language}.  The scalar value types include \emph{char},
+is a \emph{dynamically typed language}.  The scalar value types
+include \emph{char} (Unicode character),
 \emph{integer} (64-bit signed integers),
 \emph{long} (multi-precision integers) and
 \emph{float}\footnote{Dino floats are IEEE 754-1985 double precison
@@ -519,7 +520,7 @@ and assigning it to a variable declared using \emph{val}:
 Pattern matching is a useful instrument for distinguishing and decomposing
 values and extracting their parts into variables.
 Dino's pattern matching mechanism can
-be used in a variable declaration or in a \emph{switch-statement}.
+be used in a variable declaration or in a \emph{pmatch-statement}.
 
 The following is an example of pattern matching in a declaration:
 
@@ -545,11 +546,11 @@ The values of the first and second elements of {\tt v} will be assigned to newly
 %second elements will be assigned correspondingly to newly declared
 %variables {\tt a} and {\tt b}.
 
-The following is an example of pattern matching in a switch-statement:
+The following is an example of pattern matching in a pmatch-statement:
 
 {\footnotesize
 \begin{verbatim}
-1. switch (v) {
+1. pmatch (v) {
 2.   case [...]: putln ("array"); continue;
 3.   case [a, ...]:
 4.     if (a == 0) break;
@@ -562,17 +563,17 @@ The following is an example of pattern matching in a switch-statement:
 }
 
 %Instead of throwing an exception in the case of a failed match,
-The switch-statement tries to match
+The pmatch-statement tries to match
 a value with the patterns in the case clauses and
 executes the code corresponding to the first matched pattern.  The scope
 of variables defined in the pattern extends to statements within the case clause.
-A \emph{continue} statement within a case clause means that pattern matching should resume and continue to the subsequent case clauses. A \emph{break} statement exits the switch
+A \emph{continue} statement within a case clause means that pattern matching should resume and continue to the subsequent case clauses. A \emph{break} statement exits the pmatch
 statement.  There is an implicit break at the end of each case clause.
 
-The above example illustrates the possibilities of the switch statement, but
+The above example illustrates the possibilities of the pmatch statement, but
 the program used for the example is artificial. The following is a more
 realistic program using classes and pattern matching:
-%The previous example represents possibilities of switch statement but
+%The previous example represents possibilities of pmatch statement but
 %the example itself is artificial. The following example is more
 %of a real-life program using classes and functions and pattern matching:
 
@@ -582,7 +583,7 @@ realistic program using classes and pattern matching:
  2. class leaf (i) {use tree;}
  3. class node (l, r) {use tree;}
  4. fun exists_leaf (test, t) {
- 5.   switch (t) {
+ 5.   pmatch (t) {
  6.     case leaf (v): test (v);
  7.     case node (l, r):
  8.       exists_leaf (test, l) || exists_leaf (test, r);
@@ -750,7 +751,8 @@ Although the code required for dispatch is very simple (read the address and jum
 statement. Each case of the switch statement contains an implementation of a different byte code instruction. Dino implementation
 experience shows that a \emph{proper} direct dispatch implementation is
 more efficient on modern architectures. By `proper', we mean that the compiler
-should be forced to generate optimized code for the switch statement\footnote{For example, it is possible to force the GCC compiler to omit range checking and zero extension of the opcode value. The resulting code for x86/x86-64 has less than half the instructions compared to the code generated for a switch statement by default.}. The optimization results in the code for direct dispatch being compiled to a number of machine instructions comparable to that of the machine code for direct threaded dispatch.
+should be forced to generate optimized code for the switch statement
+if the number of all byte code intructions is less than 256\footnote{For example, it is possible to force the GCC compiler to omit range checking and zero extension of the opcode value. The resulting code for x86/x86-64 has less than half the instructions compared to the code generated for a switch statement by default.}. The optimization results in the code for direct dispatch being compiled to a number of machine instructions comparable to that of the machine code for direct threaded dispatch.
 
   To take advantage of hardware branch prediction, some authors proposed
 to replicate instructions or to make a direct switch
@@ -758,8 +760,7 @@ at the end of each code responsible for executing a byte code instruction \cite{
 might work well when we have a small benchmark that takes advantage of the hot path,
 but in most real programs the bytecode will generally have different instructions adjacent to one another. % one type of instruction after another.
 The larger and more complex the benchmarks, and the more different types of
-byte code instructions the VM provides\footnote{Dino's implementation uses more
-than 250 byte code instructions.}, the worse this approach will perform.
+byte code instructions the VM provides, the worse this approach will perform.
 %The bigger and more complex benchmarks and the more different types of
 %byte code instructions we have\footnote{Dino implementation uses more
 %  250 byte code instructions.}, the worse result we have.
@@ -768,8 +769,13 @@ The performance rapidly becomes worse than that of direct dispatch.
 %performance becomes very soon worse than one for the direct
 %dispatch.
 
-  In the Dino implementation, the use of a proper direct dispatch implementation improves
-code performance for a simple loop benchmark up to 3\% (on a modern x86-64 architecture) compared to the next-best direct threaded dispatch method.
+  In early Dino implementation, the use of a proper direct dispatch implementation improved
+code performance for a simple loop benchmark up to 3\% (on a modern
+x86-64 architecture) compared to the next-best direct threaded
+dispatch method.  Unfortunately, the latest Dino implementation uses more
+than 256 byte code instructions.  Therefore we started to use the direct threaded code
+method as the best possible dispatch method for such number of byte
+code instructions.
 %   For Dino the proper direct dispatch implementation improves code
 % up to 3\% on a simple loop benchmark on modern x86-64 architecture over
 % the next best direct threaded dispatch.
@@ -1206,10 +1212,8 @@ source position handling, error reporting, memory allocation handling,
 hash tables, sparse sets, Earley parser etc.  The Dino implementation
 actively uses most of these.
 
-Additionally, the Dino implementation uses the GMP (multi-precision integer arithmetic)
-and GNU regex libraries\footnote {The GNU regex library is slow and
-probably outdated. Another library may be used in the near future
-instead.}.
+Additionally, the Dino implementation uses the GMP (multi-precision
+integer arithmetic), iconv (different encodings support), and ONIGURUMA regex libraries.
 
 \section{Effect of implementation decisions and optimizations}
 \label{model_benchmarks}
@@ -1448,9 +1452,18 @@ Some machine learning approaches could be
 used in order to find the best combination of optimizations
 depending on features of the generated code \cite{CompilerDesign}.
 
+  Still GCC-based JIT can be quite expensive for some targets which
+have memory constraints or do not support files in memory.  One such
+target is CYGWIN environment\cite{Cygwin} where using GCC-based JIT
+results in a performance degradation in most cases.  A simple light-weight JIT
+implementation specialized for Dino could be a solution.  Comparison
+of GCC-based JIT and the light-weight JIT with different points of
+view (generated code performance, efforts to implement, used
+resources, startup time etc) would be quite an interesting topic for research.
+  
 There are also plans to develop Dino from a research language into a language which could
-be widely used in practice. Features planned for this purpose include Unicode support,
-a better regexp library, native OS thread support for parallelism,
+be widely used in practice. Features planned for this purpose include
+type annotation,  light-weight specialized JIT, native OS thread support for parallelism,
 rewritten standard libraries, and a more convenient foreign function 
 interface. In addition to native support for parallelism,
 a more sophisticated model could be provided for synchronization.
@@ -1508,6 +1521,9 @@ http://murmurhash.googlepages.com/
   ``The Compiler Design Handbook: Optimizations and Machine Code Generation'',
    Second Edition, CRC Press, 2007.
   
+\bibitem[Cygwin]{Cygwin}
+https://www.cygwin.com/
+
 \bibitem[Ertl]{Ertl}
 M.A. Ertl, D. Gregg. ``The behavior of efficient virtual machine
 interpreters on modern architectures'', \emph{Euro-Par 2001 Parallel
