@@ -314,7 +314,7 @@ As in the case of arrays,
 tables can be mutable or immutable, and elements of mutable tables can
 be modified, added and removed.
 
-\subsection{Functions, Closures, and Threads}
+\subsection{Functions, Closures, and Fibers}
 
   Functions in Dino are first class values.  In other words, they
 can be assigned to variables, passed as parameters, returned as
@@ -361,12 +361,13 @@ base} given to the corresponding call of {\tt incr}.
 %function which returns sum of its parameter and value of parameter {\tt
 %base} of the corresponding call of function {\tt incr}.
 
-A thread in Dino is a function which executes concurrently from its
-point of invocation.  Here is an example:
+A \emph{fiber} in Dino is a function which executes concurrently from
+its point of invocation.  A fiber call being executed is called a
+\emph{thread}.  Here is an example:
 
 {\footnotesize
 \begin{verbatim}
-1. thread t (n) {for (var i = 0; i < n; i++) putln (i);}
+1. fiber t (n) {for (var i = 0; i < n; i++) putln (i);}
 2. t(100); // the following code will not wait for t finish
 3. for (var i = 0; i < 1000; i++) putln ("main", i);
 \end{verbatim}
@@ -384,7 +385,7 @@ To synchronize threads, Dino provides a basic {\tt wait} statement:
 }
 
 % XXX CHECK CORRECTNESS OF THE BELOW DESCRIPTION
-Thread execution is concurrent but not parallel. In other words, the multithreading
+Thread is concurrent but not parallel. In other words, the multithreading
 is implemented by so-called \emph{green threads}, with the Dino interpreter alternately executing statements from different threads\footnote{The multithreading system in Dino
 has existed without any change since its very first version,
 as the original application of Dino (scripting dinosaur movements in a simulation)
@@ -392,7 +393,7 @@ did not require any more complex form of parallelism.
 There are plans
 to make threads parallel, e.g. by implementing them as OS-level threads.
 This will likely change the semantics of Dino threads in the future.}.
-Simple statements, e.g. statements that do not contain function calls, are atomic, i.e. cannot be interrupted by another thread's execution.
+Simple statements, e.g. statements that do not contain function calls, are atomic, i.e. cannot be interrupted by another thread.
 %Thread execution is concurrent but not parallel, in other words the threads
 %are implemented by so called \emph{green threads}.  Simple statements,
 %e.g. assignments without calls, are atomic, i.e. can not be
@@ -631,6 +632,7 @@ Here is an example where the Earley's parser built into Dino is used to parse a 
 
 {\scriptsize
 \begin{verbatim}
+expose yaep.*;
 val grammar = "TERM ident=301, num=302, if=303,
                     then=304, for=305, do=307, var=308;
   program = program stmt                     # list (0 1)
@@ -674,7 +676,7 @@ of the implementation are described in more detail.
 %details.
   
   Figure \ref{fig:Dino-flow} represents the general structure of the current Dino
-implementation and the flow of data through it.
+implementation\cite{Makarov} and the flow of data through it.
 
   Dino interpreter can be used in one of two modes.  The first mode is a read-eval-print 
 loop (REPL) where a completed statement undergoes all
@@ -830,7 +832,7 @@ very difficult or even impossible to implement for SB virtual machines.
   The current Dino byte code format includes multi-operand instructions
 with 1-5 operands (usually 3), control flow instructions (blocks, branches, calls, etc.),
 as well as instructions representing declarations such as vdecl (variable declaration)
-and fdecl (function, class, and thread declarations).
+and fdecl (function, class, and fiber declarations).
 %  The current Dino byte code consists of declarations including vdecl
 %(variable declaration) and fdecl (function, class, thread
 %declarations), control flow instructions (blocks, branches, calls etc) and
@@ -1542,6 +1544,9 @@ Chris Lattner and Vikram Adve.  \emph{LLVM: A compilation
 International Symposium on Code Generation and Optimization, March
 2004.
 
+\bibitem[Makarov]{Makarov} Vladimir Makarov, The Programming Language Dino,
+https://github.com/dino-lang/dino
+  
 \bibitem[Malcolm]{Malcolm} David Malcolm, GCC JIT wiki page,
 https://gcc.gnu.org/wiki/JIT
   
@@ -1587,4 +1592,3 @@ Article No. 2.
 %  ----         ------  ----    ------
 
 %  2013.06.29   TU      0.1--4  comments on permission/copyright notices
-

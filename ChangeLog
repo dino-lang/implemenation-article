@@ -1,3 +1,8 @@
+2016-03-31  Vladimir Makarov  <vmakarov@redhat.com>
+
+	* dino.tex: Use fibers.  Add github link.  Use yaep.
+	* dino.{dvi, ps, pdf}: Update.
+
 2016-02-12  Vladimir Makarov  <vmakarov@gcc.gnu.org>
 
 	* dino.tex: Unicode character.  Switch-stmt to pmatch-statement.
