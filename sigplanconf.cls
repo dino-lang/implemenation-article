@@ -575,13 +575,12 @@
 
 \def \@copyrightspace {%
   \@float{copyrightbox}[b]%
-  \vbox to 1.2in{%
+  \vbox to 0.0in{%
     \vfill
     \parbox[b]{20pc}{%
       \scriptsize
       \if \@preprint
-        [Copyright notice will appear here
-         once 'preprint' option is removed.]\par
+        \par
       \else
         \@toappear
       \fi
